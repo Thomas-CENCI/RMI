@@ -1,8 +1,11 @@
+import dispenser.SwitcherIntf;
+
 import java.rmi.Naming;
 
-public class RmiClient {
+public class RmiClient{
+
     public static void main(String args[]) throws Exception {
-        RmiServerIntf server = (RmiServerIntf)Naming.lookup("//localhost/RmiServer");
-        System.out.println(server.getMessage());
+        SwitcherIntf server = (SwitcherIntf) Naming.lookup("//localhost/1");
+        System.out.println(server.read("11"));
     }
 }
