@@ -7,7 +7,7 @@ public class RmiClient{
     public static void main(String args[]) throws Exception {
         byte[] s;
         SwitcherInterface switcher = (SwitcherInterface) Naming.lookup("//localhost/switcher");
-        Machine machine = (Machine) Naming.lookup("//localhost/machine/2");
+        Machine machine = (Machine) Naming.lookup("//localhost/machine/1");
 
         s = switcher.read("11");
         System.out.println(new String(s));

@@ -9,13 +9,11 @@ import java.rmi.server.UnicastRemoteObject;
 public class Switcher implements SwitcherInterface {
 
     public void createMachine() throws IOException {
-        Machine test = new MachineObj(2);
-        test.CheckResources("text.txt");
+        for (int i=1; i<=3; i++){
+            Machine machine = new MachineObj(i);
+            this.addMachine(machine);
+        }
 
-        this.addMachine(test);
-        Machine test2 = new MachineObj(3);
-
-        this.addMachine(test2);
         System.out.println(LocateRegistry.getRegistry().list().length);
         this.removeMachine("2");
     }
@@ -24,7 +22,9 @@ public class Switcher implements SwitcherInterface {
     public boolean addMachine(Machine machine){
         try{
             String machine_id = machine.getMachineId();
+            System.out.println("//localhost/machine/"+machine_id);
             Naming.rebind("//localhost/machine/"+machine_id, UnicastRemoteObject.exportObject(machine, Integer.parseInt(machine_id)));
+            machine.CheckResources("text.txt");
             return true;
         }
         catch(Exception e){
@@ -41,7 +41,6 @@ public class Switcher implements SwitcherInterface {
         catch(Exception e){
             return false;
         }
-
     }
 
     @Override
