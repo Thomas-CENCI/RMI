@@ -4,14 +4,8 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
 
 public class Switcher implements SwitcherInterface {
-    private HashMap MachinesHashMap;
-
-    public Switcher(){
-        this.MachinesHashMap = new HashMap<String, Machine>();
-    }
 
     public void createMachine() throws RemoteException {
         Machine test = new MachineObj(2);
@@ -28,7 +22,6 @@ public class Switcher implements SwitcherInterface {
     public boolean addMachine(Machine machine){
         try{
             String machine_id = machine.getMachineId();
-            this.MachinesHashMap.put("machine_"+machine_id, machine);
             Naming.rebind("//localhost/machine/"+machine_id, UnicastRemoteObject.exportObject(machine, Integer.parseInt(machine_id)));
             return true;
         }
@@ -41,9 +34,6 @@ public class Switcher implements SwitcherInterface {
     public boolean removeMachine(String id){
         try{
             LocateRegistry.getRegistry().unbind("machine/"+id);
-            Machine machine_delete = (Machine) this.MachinesHashMap.get("machine_"+id);
-            machine_delete = null;
-            this.MachinesHashMap.remove("machine_"+id);
             return true;
         }
         catch(Exception e){
