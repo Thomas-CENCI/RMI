@@ -1,5 +1,6 @@
 package dispenser;
 
+import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -13,8 +14,9 @@ public class Switcher implements SwitcherInterface {
         this.MachinesHashMap = new HashMap<String, Machine>();
     }
 
-    public void createMachine() throws RemoteException {
+    public void createMachine() throws IOException {
         Machine test = new MachineObj(2);
+        test.CheckResources("text.txt");
 
         this.addMachine(test);
         Machine test2 = new MachineObj(3);
@@ -60,13 +62,17 @@ public class Switcher implements SwitcherInterface {
     }
 
     @Override
-    public boolean write(String file_name, byte[] data, boolean update) throws RemoteException {
-        return false;
+    public void write(String file_name, byte[] data) throws RemoteException {
     }
 
     @Override
     public String getMachineId() throws RemoteException {
         return null;
+    }
+
+    @Override
+    public void CheckResources(String file_name) throws IOException {
+
     }
 
     @Override
