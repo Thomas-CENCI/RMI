@@ -1,59 +1,62 @@
 package dispenser;
 
-import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 
-public class Switcher extends UnicastRemoteObject implements SwitcherIntf {
+public class Switcher implements SwitcherInterface {
+    private HashMap MachinesHashMap;
 
-    public Switcher() throws RemoteException {
-        super(0);
-        try { //special exception handler for registry creation
-            LocateRegistry.createRegistry(1099);
-            System.out.println("java RMI registry created.");
-        } catch (RemoteException e) {
-            //do nothing, error means registry already exists
-            System.out.println("java RMI registry already exists.");
+    public Switcher(){
+        this.MachinesHashMap = new HashMap<String, Machine>();
+    }
+
+    public void createMachine() throws RemoteException {
+        Machine test = new MachineObj(2);
+
+        this.addMachine(test);
+        Machine test2 = new MachineObj(3);
+
+        this.addMachine(test2);
+        System.out.println(LocateRegistry.getRegistry().list().length);
+        this.removeMachine("2");
+    }
+
+    @Override
+    public boolean addMachine(Machine machine){
+        try{
+            String machine_id = machine.getMachineId();
+            this.MachinesHashMap.put("machine_"+machine_id, machine);
+            Naming.rebind("//localhost/machine/"+machine_id, UnicastRemoteObject.exportObject(machine, Integer.parseInt(machine_id)));
+            return true;
+        }
+        catch(Exception e){
+            return false;
         }
     }
 
-    public void createMachine() throws RemoteException, MalformedURLException {
-        Registry registry = LocateRegistry.getRegistry();
-        System.out.println(registry.list().length);
-
-        Machine test = new MachineObj(1);
-
-        this.addMachine(test);
-        System.out.println(registry.list().length);
-
-        Machine test2 = new MachineObj(2);
-
-        this.addMachine(test2);
-        System.out.println(registry.list().length);
-
-        System.out.println(LocateRegistry.getRegistry());
-
-    }
-
     @Override
-    public boolean addMachine(Machine machine) throws RemoteException, MalformedURLException {
-        String machine_number = machine.getMachineNumber();
-        Naming.rebind("//localhost/"+machine_number, UnicastRemoteObject.exportObject(machine, Integer.parseInt(machine_number)));
-        return true;
-    }
+    public boolean removeMachine(String id){
+        try{
+            LocateRegistry.getRegistry().unbind("machine/"+id);
+            Machine machine_delete = (Machine) this.MachinesHashMap.get("machine_"+id);
+            machine_delete = null;
+            this.MachinesHashMap.remove("machine_"+id);
+            return true;
+        }
+        catch(Exception e){
+            return false;
+        }
 
-    @Override
-    public boolean removeMachine(Machine machine) throws RemoteException {
-        return false;
     }
 
     @Override
     public byte[] read(String file_name) throws RemoteException {
         System.out.println(file_name+"FILE");
-        return new byte[0];
+        byte[] test = (file_name+"FILE").getBytes();
+        return test;
     }
 
     @Override
@@ -62,7 +65,7 @@ public class Switcher extends UnicastRemoteObject implements SwitcherIntf {
     }
 
     @Override
-    public String getMachineNumber() {
+    public String getMachineId() throws RemoteException {
         return null;
     }
 

@@ -3,19 +3,21 @@ package dispenser;
 import java.rmi.RemoteException;
 
 public class MachineObj implements Machine{
-    Integer number;
+    Integer id;
 
-    public MachineObj(Integer number){
-        this.number = number;
+    public MachineObj(Integer id){
+        this.id = id;
     }
 
-    public String getMachineNumber() throws RemoteException{
-        return Integer.toString(this.number);
+    public String getMachineId() throws RemoteException{
+        return Integer.toString(this.id);
     }
 
     @Override
     public byte[] read(String file_name) throws RemoteException {
-        return new byte[0];
+        byte[] test = "MACHINE".getBytes();
+        System.out.println("dispenser.Machine"+this.getMachineId());
+        return test;
     }
 
     @Override
