@@ -1,10 +1,15 @@
 package dispenser;
 
+import java.io.File;
 import java.io.IOException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Switcher implements SwitcherInterface {
 
@@ -15,14 +20,12 @@ public class Switcher implements SwitcherInterface {
         }
 
         System.out.println(LocateRegistry.getRegistry().list().length);
-        this.removeMachine("2");
     }
 
     @Override
     public boolean addMachine(Machine machine){
         try{
             String machine_id = machine.getMachineId();
-            System.out.println("//localhost/machine/"+machine_id);
             Naming.rebind("//localhost/machine/"+machine_id, UnicastRemoteObject.exportObject(machine, Integer.parseInt(machine_id)));
             machine.CheckResources("text.txt");
             return true;
@@ -36,11 +39,52 @@ public class Switcher implements SwitcherInterface {
     public boolean removeMachine(String id){
         try{
             LocateRegistry.getRegistry().unbind("machine/"+id);
+            this.removeResources("1");
             return true;
         }
         catch(Exception e){
             return false;
         }
+    }
+
+    @Override
+    public boolean removeResources(String id) throws IOException {
+        File tempDir = new File("./Resources/R" + id);
+
+        if (tempDir.exists()){
+            String[]entries = tempDir.list();
+            for(String s: entries){
+                File currentFile = new File(tempDir.getPath(),s);
+                currentFile.delete();
+            }
+            if (tempDir.delete()){
+                System.out.println("Machine resources "+id+" deleted");
+            }
+            else{
+                System.out.println("Deletion failed");
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void updateResources(String file_name, String machine_id) throws IOException, NotBoundException {
+        Registry registry = LocateRegistry.getRegistry();
+        ArrayList<String> bound_names = new ArrayList(Arrays.asList(registry.list()));
+
+        Machine reference_machine = (Machine) Naming.lookup("//localhost/machine/"+machine_id);
+        byte[] file_data = reference_machine.read(file_name);
+
+        Machine current_machine;
+
+        for (String machine : bound_names){
+            if (!machine.equals("switcher") && !machine.equals("machine/"+machine_id)){
+                current_machine = (Machine) Naming.lookup("//localhost/"+machine);
+                current_machine.write(file_name, file_data);
+            }
+        }
+
     }
 
     @Override

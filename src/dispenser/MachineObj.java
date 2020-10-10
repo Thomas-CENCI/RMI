@@ -1,8 +1,10 @@
 package dispenser;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.RemoteException;
 
 public class MachineObj implements Machine{
@@ -17,10 +19,9 @@ public class MachineObj implements Machine{
     }
 
     @Override
-    public byte[] read(String file_name) throws RemoteException {
-        byte[] test = "MACHINE".getBytes();
-        System.out.println("dispenser.Machine"+this.getMachineId());
-        return test;
+    public byte[] read(String file_name) throws IOException {
+        Path path = Paths.get("./Resources/R"+this.getMachineId()+"/"+file_name);
+        return Files.readAllBytes(path);
     }
 
     public void CheckDirectory() throws RemoteException {
@@ -55,8 +56,8 @@ public class MachineObj implements Machine{
     @Override
     public void write(String file_name, byte[] data) throws RemoteException {
         try {
-            FileWriter myWriter = new FileWriter(file_name);
-            myWriter.write(String.valueOf(data));
+            FileWriter myWriter = new FileWriter("./Resources/R"+this.getMachineId()+"/"+file_name);
+            myWriter.write(new String(data, StandardCharsets.UTF_8));
             myWriter.close();
             System.out.println("Successfully wrote to the file.");
         } catch (IOException e) {

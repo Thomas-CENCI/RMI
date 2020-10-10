@@ -11,7 +11,10 @@ public class RmiClient{
 
         s = switcher.read("11");
         System.out.println(new String(s));
-        s = machine.read("11");
-        System.out.println(new String(s));
+
+        switcher.updateResources("text.txt", "2");
+
+        //s = machine.read("11");
+        //System.out.println(new String(s));
     }
 }
