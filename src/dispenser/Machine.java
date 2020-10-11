@@ -10,4 +10,6 @@ public interface Machine extends Remote {
     void write(String file_name, byte data[]) throws RemoteException;
     String getMachineId() throws RemoteException;
     void CheckResources(String file_name) throws IOException;
+    int getLoad() throws RemoteException;
+    void setLoad(Integer load) throws RemoteException;
 }
