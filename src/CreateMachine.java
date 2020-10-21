@@ -34,7 +34,7 @@ public class CreateMachine {
         try{
             String machine_id = machine.getMachineId();
             this.switcher.addMachine((Machine) UnicastRemoteObject.exportObject(machine, 0));
-            //machine.CheckResources("text.txt");
+            machine.CheckResources("text.txt");
             return true;
         }
         catch(Exception e){
