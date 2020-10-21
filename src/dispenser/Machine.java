@@ -14,4 +14,6 @@ public interface Machine extends Remote {
     void CheckResources(String file_name) throws IOException;
     int getLoad() throws RemoteException;
     void setLoad(Integer load) throws RemoteException;
+    void addLoad() throws RemoteException;
+    void unLoad() throws RemoteException;
 }

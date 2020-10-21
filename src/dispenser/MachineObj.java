@@ -65,6 +65,16 @@ public class MachineObj implements Machine{
     }
 
     @Override
+    public void addLoad() throws RemoteException {
+        this.load++;
+    }
+
+    @Override
+    public void unLoad() throws RemoteException {
+        this.load--;
+    }
+
+    @Override
     public void write(String file_name, byte[] data) throws RemoteException {
         try {
             FileWriter myWriter = new FileWriter("./Resources/R"+this.getMachineId()+"/"+file_name);

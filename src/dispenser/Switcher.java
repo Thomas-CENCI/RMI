@@ -166,6 +166,16 @@ public class Switcher implements SwitcherInterface {
     }
 
     @Override
+    public void addLoad() throws RemoteException {
+
+    }
+
+    @Override
+    public void unLoad() throws RemoteException {
+
+    }
+
+    @Override
     public void load(Machine machine, int load) throws RemoteException {
 
     }
