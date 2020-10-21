@@ -1,6 +1,5 @@
 import dispenser.Machine;
 import dispenser.SwitcherInterface;
-
 import java.nio.charset.StandardCharsets;
 import java.rmi.Naming;
 
