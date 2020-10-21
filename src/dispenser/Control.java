@@ -7,8 +7,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface Control extends Remote {
-    boolean addMachine(Machine machine) throws RemoteException, MalformedURLException;
-    boolean removeMachine(String host) throws RemoteException, NotBoundException;
+    boolean addMachine(Machine machine) throws RemoteException, MalformedURLException, IOException, NotBoundException;
+    boolean removeMachine(Machine machine) throws RemoteException, NotBoundException;
     boolean removeResources(String host) throws IOException;
 
 

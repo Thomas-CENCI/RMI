@@ -24,7 +24,7 @@ public class RmiServer extends UnicastRemoteObject {
         new RmiServer();
         Switcher sw = new Switcher();
         Naming.rebind("//localhost/switcher", UnicastRemoteObject.exportObject(sw, 0));
-        sw.createMachine();
+        //sw.createMachine();
     }
 
 }

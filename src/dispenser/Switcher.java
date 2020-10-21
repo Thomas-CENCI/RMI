@@ -2,9 +2,12 @@ package dispenser;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -16,16 +19,7 @@ import java.util.Arrays;
 public class Switcher implements SwitcherInterface {
 
     private ArrayList<String> inwriting = new ArrayList<String>();
-
-    public void createMachine() throws IOException {
-        for (int i=1; i<=3; i++){
-            Machine machine = new MachineObj(i);
-            machine.setLoad(i);
-            System.out.println("Load : " + machine.getLoad());
-            this.addMachine(machine);
-        }
-        System.out.println(LocateRegistry.getRegistry().list().length);
-    }
+    private ArrayList<Machine> machines = new ArrayList<Machine>();
 
     public Machine machineChoice() throws RemoteException, MalformedURLException, NotBoundException {
         HashMap<String, Integer> loadRecord= new HashMap<String, Integer>();
@@ -58,23 +52,17 @@ public class Switcher implements SwitcherInterface {
     }
 
     @Override
-    public boolean addMachine(Machine machine){
-        try{
-            String machine_id = machine.getMachineId();
-            Naming.rebind("//localhost/machine/"+machine_id, UnicastRemoteObject.exportObject(machine, Integer.parseInt(machine_id)));
-            machine.CheckResources("text.txt");
-            return true;
-        }
-        catch(Exception e){
-            return false;
-        }
+    public boolean addMachine(Machine machine) throws IOException, NotBoundException {
+        this.machines.add(machine);
+        System.out.println(new String(machine.read("text.txt"), StandardCharsets.UTF_8));
+        return true;
     }
 
     @Override
-    public boolean removeMachine(String id){
+    public boolean removeMachine(Machine machine){
         try{
-            LocateRegistry.getRegistry().unbind("machine/"+id);
-            this.removeResources("1");
+            this.machines.remove(machine);
+            this.removeResources(machine.getMachineId());
             return true;
         }
         catch(Exception e){
@@ -105,17 +93,10 @@ public class Switcher implements SwitcherInterface {
 
     @Override
     public void updateResources(String file_name, String machine_id) throws Exception {
-        Registry registry = LocateRegistry.getRegistry();
-        ArrayList<String> bound_names = new ArrayList(Arrays.asList(registry.list()));
+        byte[] file_data = this.machines.get(Integer.parseInt(machine_id)).read(file_name);
 
-        Machine reference_machine = (Machine) Naming.lookup("//localhost/machine/"+machine_id);
-        byte[] file_data = reference_machine.read(file_name);
-
-        Machine current_machine;
-
-        for (String machine : bound_names){
-            if (!machine.equals("switcher") && !machine.equals("machine/"+machine_id)){
-                current_machine = (Machine) Naming.lookup("//localhost/"+machine);
+        for (Machine current_machine : this.machines){
+            if (!current_machine.getMachineId().equals(machine_id)){
                 current_machine.write(file_name, file_data);
             }
         }
@@ -124,11 +105,10 @@ public class Switcher implements SwitcherInterface {
     @Override
     public byte[] read(String file_name) throws IOException, NotBoundException {
         if (!this.inwriting.contains(file_name)){
-            System.out.println(file_name);
             return this.machineChoice().read(file_name);
         }
         else{
-            return "Fichier en cours d'écriture".getBytes();
+            return "File in writing".getBytes();
         }
     }
 

@@ -13,5 +13,6 @@ public class RmiClient{
         switcher.write("text.txt", "Test2".getBytes());
         System.out.println(new String(switcher.read("text.txt"), StandardCharsets.UTF_8));
 
+        switcher.removeResources("4");
     }
 }
