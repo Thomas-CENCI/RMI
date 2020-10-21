@@ -84,7 +84,6 @@ public class Switcher implements SwitcherInterface {
                 current_machine.write(file_name, file_data);
             }
         }
-
     }
 
     @Override
