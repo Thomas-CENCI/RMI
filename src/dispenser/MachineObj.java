@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 
 public class MachineObj implements Machine{
     Integer id;
+    Integer load = 0;
 
     public MachineObj(Integer id){
         this.id = id;
@@ -51,6 +52,16 @@ public class MachineObj implements Machine{
     public void CheckResources(String file_name) throws IOException {
         CheckDirectory();
         CheckFiles(file_name);
+    }
+
+    @Override
+    public int getLoad() throws RemoteException {
+        return this.load;
+    }
+
+    @Override
+    public void setLoad(Integer load) throws RemoteException {
+        this.load = load;
     }
 
     @Override

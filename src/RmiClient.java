@@ -16,5 +16,7 @@ public class RmiClient{
 
         //s = machine.read("11");
         //System.out.println(new String(s));
+
+        switcher.machineChoice();
     }
 }
