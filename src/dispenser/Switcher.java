@@ -117,8 +117,10 @@ public class Switcher implements SwitcherInterface {
         if (!this.inwriting.contains(file_name)){
             this.inwriting.add(file_name);
             Machine machine_choice = this.machineChoice();
+            machine_choice.addLoad();
             machine_choice.write(file_name, data);
             this.updateResources(file_name, machine_choice.getMachineId());
+            machine_choice.unLoad();
             this.inwriting.remove(file_name);
         }
         else{
