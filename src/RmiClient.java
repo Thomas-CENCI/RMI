@@ -1,22 +1,17 @@
 import dispenser.Machine;
 import dispenser.SwitcherInterface;
 
+import java.nio.charset.StandardCharsets;
 import java.rmi.Naming;
 
 public class RmiClient{
     public static void main(String args[]) throws Exception {
-        byte[] s;
         SwitcherInterface switcher = (SwitcherInterface) Naming.lookup("//localhost/switcher");
-        Machine machine = (Machine) Naming.lookup("//localhost/machine/1");
 
-        s = switcher.read("11");
-        System.out.println(new String(s));
+        switcher.write("text.txt", "Un test".getBytes());
+        System.out.println(new String(switcher.read("text.txt"), StandardCharsets.UTF_8));
+        switcher.write("text.txt", "Test2".getBytes());
+        System.out.println(new String(switcher.read("text.txt"), StandardCharsets.UTF_8));
 
-        switcher.updateResources("text.txt", "2");
-
-        //s = machine.read("11");
-        //System.out.println(new String(s));
-
-        switcher.machineChoice();
     }
 }

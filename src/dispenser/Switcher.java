@@ -15,6 +15,8 @@ import java.util.Arrays;
 
 public class Switcher implements SwitcherInterface {
 
+    private ArrayList<String> inwriting = new ArrayList<String>();
+
     public void createMachine() throws IOException {
         for (int i=1; i<=3; i++){
             Machine machine = new MachineObj(i);
@@ -120,14 +122,28 @@ public class Switcher implements SwitcherInterface {
     }
 
     @Override
-    public byte[] read(String file_name) throws RemoteException {
-        System.out.println(file_name+"FILE");
-        byte[] test = (file_name+"FILE").getBytes();
-        return test;
+    public byte[] read(String file_name) throws IOException, NotBoundException {
+        if (!this.inwriting.contains(file_name)){
+            System.out.println(file_name);
+            return this.machineChoice().read(file_name);
+        }
+        else{
+            return "Fichier en cours d'écriture".getBytes();
+        }
     }
 
     @Override
-    public void write(String file_name, byte[] data) throws RemoteException {
+    public void write(String file_name, byte[] data) throws Exception {
+        if (!this.inwriting.contains(file_name)){
+            this.inwriting.add(file_name);
+            Machine machine_choice = this.machineChoice();
+            machine_choice.write(file_name, data);
+            this.updateResources(file_name, machine_choice.getMachineId());
+            this.inwriting.remove(file_name);
+        }
+        else{
+            System.out.println("File already in writing");
+        }
     }
 
     @Override
@@ -137,7 +153,6 @@ public class Switcher implements SwitcherInterface {
 
     @Override
     public void CheckResources(String file_name) throws IOException {
-
     }
 
     @Override
