@@ -21,22 +21,27 @@ public class Switcher implements SwitcherInterface {
     private ArrayList<String> inwriting = new ArrayList<String>();
     private ArrayList<Machine> machines = new ArrayList<Machine>();
 
-    public Machine machineChoice() throws RemoteException, MalformedURLException, NotBoundException {
-        HashMap<String, Integer> loadRecord= new HashMap<String, Integer>();
-        Registry registry = LocateRegistry.getRegistry();
-        for(String machineName : registry.list()){
+    public Machine machineChoice() throws RemoteException {
+        Machine chosenMachine = machines.get(0); // For comparaison reasons
+        Integer minValue = chosenMachine.getLoad(); // For comparaison reasons
+
+        for(Machine machine : machines){
+            System.out.println(("Test"));
+            String machineName = machine.getMachineId();
             System.out.println("Name : " + machineName);
             if(!(machineName.equals("switcher"))) {
-                Machine machine = (Machine) Naming.lookup("//localhost/" + machineName);
                 System.out.println("machine : " + machine + "\n");
-                loadRecord.put(machineName, machine.getLoad());
+                if(machine.getLoad() <= minValue) {
+                    minValue = machine.getLoad();
+                    chosenMachine = machine;
+                }
             }
         }
-        Machine chosenMachine = (Machine) Naming.lookup(keyOfMinValue(loadRecord));
-        System.out.println("Chosen machine : " + chosenMachine.getLoad());
+        System.out.println("Chosen machine : " + chosenMachine.getMachineId() + "\nLoad :" + chosenMachine.getLoad());
         return chosenMachine;
     }
 
+    /*
     public String keyOfMinValue(HashMap<String, Integer> hashmap) throws RemoteException, MalformedURLException, NotBoundException {
         List<String> machineNames = new ArrayList<>(hashmap.keySet());
         Integer minValue = hashmap.get(machineNames.get(0));
@@ -50,6 +55,7 @@ public class Switcher implements SwitcherInterface {
         }
         return minKey;
     }
+    */
 
     @Override
     public boolean addMachine(Machine machine) throws IOException, NotBoundException {

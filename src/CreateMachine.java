@@ -21,13 +21,17 @@ public class CreateMachine {
         new CreateMachine();
     }
 
-    public void createMachine() throws IOException {
+    public void createMachine() throws IOException, NotBoundException {
         for (int i=1; i<=4; i++){
             Machine machine = new MachineObj(i);
-            machine.setLoad(1);
+            machine.setLoad(i);
+            if(i==1){
+                machine.setLoad(19); // Just to see if it chooses the right one (i.e the 2nd one)
+            }
             System.out.println("Load : " + machine.getLoad());
             this.addMachine(machine);
         }
+        System.out.println("Choice : " + switcher.machineChoice());
     }
 
     public boolean addMachine(Machine machine){
