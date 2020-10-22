@@ -8,10 +8,11 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class CreateMachine {
     private SwitcherInterface switcher;
+    Integer id = 1;
 
     public CreateMachine() throws IOException, NotBoundException {
         this.switcher = (SwitcherInterface) Naming.lookup("//localhost/switcher");
-        this.createMachine();
+        //this.createMachine();
     }
 
     public static void main(String args[]) throws IOException, NotBoundException {
@@ -19,11 +20,15 @@ public class CreateMachine {
     }
 
     public void createMachine() throws IOException {
-        for (int i=1; i<=4; i++){
+        Machine machine = new MachineObj(this.id);
+        machine.setLoad(1);
+        this.addMachine(machine);
+        id++;
+        /*for (int i=1; i<=4; i++){
             Machine machine = new MachineObj(i);
             machine.setLoad(1);
             this.addMachine(machine);
-        }
+        }*/
     }
 
     public void addMachine(Machine machine){

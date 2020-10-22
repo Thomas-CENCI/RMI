@@ -29,6 +29,9 @@ public class RmiClient implements ClientInterface {
     }
 
     public static void main(String args[]) throws Exception {
+        CreateMachine machine_manager = new CreateMachine();
+        machine_manager.createMachine();
+        machine_manager.createMachine();
         new RmiClient();
 
         /*switcher.write("text.txt", "Un test".getBytes());
