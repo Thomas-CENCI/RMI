@@ -26,18 +26,18 @@ public class Switcher implements SwitcherInterface {
         Integer minValue = chosenMachine.getLoad(); // For comparaison reasons
 
         for(Machine machine : machines){
-            System.out.println(("Test"));
+           //System.out.println(("Test"));
             String machineName = machine.getMachineId();
-            System.out.println("Name : " + machineName);
+            //System.out.println("Name : " + machineName);
             if(!(machineName.equals("switcher"))) {
-                System.out.println("machine : " + machine + "\n");
-                if(machine.getLoad() <= minValue) {
+                //System.out.println("machine : " + machine + "\n");
+                if(machine.getLoad() < minValue) {
                     minValue = machine.getLoad();
                     chosenMachine = machine;
                 }
             }
         }
-        System.out.println("Chosen machine : " + chosenMachine.getMachineId() + "\nLoad :" + chosenMachine.getLoad());
+        //System.out.println("Chosen machine : " + chosenMachine.getMachineId() + "\nLoad :" + chosenMachine.getLoad());
         return chosenMachine;
     }
 
@@ -59,8 +59,8 @@ public class Switcher implements SwitcherInterface {
 
     @Override
     public boolean addMachine(Machine machine) throws IOException, NotBoundException {
+        System.out.println("[SWITCHER][MACHINE] "+machine.getMachineId()+" has been added to switcher");
         this.machines.add(machine);
-        System.out.println(new String(machine.read("text.txt"), StandardCharsets.UTF_8));
         return true;
     }
 
@@ -98,24 +98,28 @@ public class Switcher implements SwitcherInterface {
     }
 
     @Override
-    public void updateResources(String file_name, String machine_id) throws Exception {
-        byte[] file_data = this.machines.get(Integer.parseInt(machine_id)).read(file_name);
-
+    public void updateResources(String file_name, byte[] data, String machine_id) throws Exception {
         for (Machine current_machine : this.machines){
             if (!current_machine.getMachineId().equals(machine_id)){
-                current_machine.write(file_name, file_data);
+                System.out.println("[SWITCHER][MACHINE] "+current_machine.getMachineId()+ " UPDATE "+file_name);
+                current_machine.write(file_name, data);
             }
         }
     }
 
     @Override
-    public byte[] read(String file_name) throws IOException, NotBoundException {
+    public byte[] read(String file_name, ClientInterface client) throws IOException, NotBoundException {
         if (!this.inwriting.contains(file_name)){
-            return this.machineChoice().read(file_name);
+            return this.machineChoice().read(file_name, client);
         }
         else{
             return "File in writing".getBytes();
         }
+    }
+
+    @Override
+    public byte[] read_machine(String file_name) throws IOException, NotBoundException {
+        return new byte[0];
     }
 
     @Override
@@ -125,7 +129,7 @@ public class Switcher implements SwitcherInterface {
             Machine machine_choice = this.machineChoice();
             machine_choice.addLoad();
             machine_choice.write(file_name, data);
-            this.updateResources(file_name, machine_choice.getMachineId());
+            this.updateResources(file_name, data, machine_choice.getMachineId());
             machine_choice.unLoad();
             this.inwriting.remove(file_name);
         }

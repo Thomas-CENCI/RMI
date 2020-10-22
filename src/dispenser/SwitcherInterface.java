@@ -7,6 +7,6 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface SwitcherInterface extends Machine, Control, Notification {
-    void updateResources(String file_name, String machine_id) throws IOException, NotBoundException, Exception;
+    void updateResources(String file_name, byte[] data, String machine_id) throws IOException, NotBoundException, Exception;
     Remote machineChoice() throws RemoteException, MalformedURLException, NotBoundException;
     }
