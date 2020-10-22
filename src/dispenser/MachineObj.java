@@ -5,8 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import java.rmi.NotBoundException;
 
 public class MachineObj implements Machine{
     Integer id;
@@ -16,31 +15,31 @@ public class MachineObj implements Machine{
         this.id = id;
     }
 
-    public String getMachineId() throws RemoteException{
+    public String getMachineId() {
         return Integer.toString(this.id);
     }
 
     @Override
-    public byte[] read_machine(String file_name) throws IOException {
+    public byte[] read(String file_name, ClientInterface client) throws IOException, NotBoundException {
         Path path = Paths.get("./Resources/R"+this.getMachineId()+"/"+file_name);
+        byte[] data = Files.readAllBytes(path);
+
+        client.getData(data);
+
         return Files.readAllBytes(path);
     }
 
     @Override
-    public byte[] read(String file_name, ClientInterface client) throws IOException {
+    public byte[] readWithSwitcher(String file_name) throws IOException {
         Path path = Paths.get("./Resources/R"+this.getMachineId()+"/"+file_name);
-        byte[] data = Files.readAllBytes(path);
-
-        client.get_data(data);
-
         return Files.readAllBytes(path);
     }
 
-    public void CheckDirectory() throws RemoteException {
-        File tempDir = new File("./Resources/R" + getMachineId());
+    public void check_directory() {
+        File temp_dir = new File("./Resources/R" + getMachineId());
 
-        if(!(tempDir.exists() && tempDir.isDirectory())){
-            tempDir.mkdir();
+        if(!(temp_dir.exists() && temp_dir.isDirectory())){
+            temp_dir.mkdir();
             System.out.println("[MACHINE] "+getMachineId()+" Directory created");;
         }
         else{
@@ -48,11 +47,11 @@ public class MachineObj implements Machine{
         }
     }
 
-    public void CheckFiles(String file_name) throws IOException {
-        File tempFile = new File("./Resources/R" + getMachineId() + "/" + file_name);
+    public void checkFiles(String file_name) throws IOException {
+        File temp_file = new File("./Resources/R" + getMachineId() + "/" + file_name);
 
-        if(!(tempFile.exists() && tempFile.isFile())){
-            tempFile.createNewFile();
+        if(!(temp_file.exists() && temp_file.isFile())){
+            temp_file.createNewFile();
             System.out.println("[MACHINE] "+getMachineId()+" File created");
         }
         else {
@@ -60,38 +59,38 @@ public class MachineObj implements Machine{
         }
     }
 
-    public void CheckResources(String file_name) throws IOException {
-        CheckDirectory();
-        CheckFiles(file_name);
+    public void checkResources(String file_name) throws IOException {
+        check_directory();
+        checkFiles(file_name);
     }
 
     @Override
-    public int getLoad() throws RemoteException {
+    public int getLoad() {
         return this.load;
     }
 
     @Override
-    public void setLoad(Integer load) throws RemoteException {
+    public void setLoad(Integer load) {
         this.load = load;
     }
 
     @Override
-    public void addLoad() throws RemoteException {
+    public void addLoad() {
         this.load++;
     }
 
     @Override
-    public void unLoad() throws RemoteException {
+    public void unload() {
         this.load--;
     }
 
     @Override
-    public void write(String file_name, byte[] data) throws RemoteException {
+    public void write(String file_name, byte[] data) {
         try {
-            FileWriter myWriter = new FileWriter("./Resources/R"+this.getMachineId()+"/"+file_name);
+            FileWriter my_writer = new FileWriter("./Resources/R"+this.getMachineId()+"/"+file_name);
             System.out.println(new String(data, StandardCharsets.UTF_8)+"machine"+this.getMachineId());
-            myWriter.write(new String(data, StandardCharsets.UTF_8));
-            myWriter.close();
+            my_writer.write(new String(data, StandardCharsets.UTF_8));
+            my_writer.close();
             System.out.println("[MACHINE] "+this.getMachineId()+" Successfully wrote to the file "+file_name);
         } catch (IOException e) {
             System.out.println("[MACHINE] "+this.getMachineId()+" An error occurred.");

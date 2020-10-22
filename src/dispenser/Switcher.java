@@ -2,19 +2,10 @@ package dispenser;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Switcher implements SwitcherInterface {
 
@@ -22,79 +13,57 @@ public class Switcher implements SwitcherInterface {
     private ArrayList<Machine> machines = new ArrayList<Machine>();
 
     public Machine machineChoice() throws RemoteException {
-        Machine chosenMachine = machines.get(0); // For comparaison reasons
-        Integer minValue = chosenMachine.getLoad(); // For comparaison reasons
+        Machine chosen_machine = machines.get(0);
+        Integer min_value = chosen_machine.getLoad();
 
         for(Machine machine : machines){
-           //System.out.println(("Test"));
-            String machineName = machine.getMachineId();
-            //System.out.println("Name : " + machineName);
-            if(!(machineName.equals("switcher"))) {
-                //System.out.println("machine : " + machine + "\n");
-                if(machine.getLoad() < minValue) {
-                    minValue = machine.getLoad();
-                    chosenMachine = machine;
-                }
-            }
-        }
-        //System.out.println("Chosen machine : " + chosenMachine.getMachineId() + "\nLoad :" + chosenMachine.getLoad());
-        return chosenMachine;
-    }
+            String machine_name = machine.getMachineId();
 
-    /*
-    public String keyOfMinValue(HashMap<String, Integer> hashmap) throws RemoteException, MalformedURLException, NotBoundException {
-        List<String> machineNames = new ArrayList<>(hashmap.keySet());
-        Integer minValue = hashmap.get(machineNames.get(0));
-        String minKey = machineNames.get(0);
-        for (String machineName : machineNames) {
-            Machine machine = (Machine) Naming.lookup("//localhost/" + machineName);
-            if (machine.getLoad() <= minValue) {
-                minValue = machine.getLoad();
-                minKey = machineName;
+            if(!(machine_name.equals("switcher"))) {
+
+                if(machine.getLoad() < min_value) {
+                    min_value = machine.getLoad();
+                    chosen_machine = machine;
+                }
+
             }
         }
-        return minKey;
+        return chosen_machine;
     }
-    */
 
     @Override
-    public boolean addMachine(Machine machine) throws IOException, NotBoundException {
+    public void addMachine(Machine machine) throws IOException, NotBoundException {
         System.out.println("[SWITCHER][MACHINE] "+machine.getMachineId()+" has been added to switcher");
         this.machines.add(machine);
-        return true;
+        System.out.println(new String(machine.readWithSwitcher("text.txt"), StandardCharsets.UTF_8));
     }
 
     @Override
-    public boolean removeMachine(Machine machine){
+    public void removeMachine(Machine machine){
         try{
             this.machines.remove(machine);
             this.removeResources(machine.getMachineId());
-            return true;
         }
-        catch(Exception e){
-            return false;
-        }
+        catch(Exception e){}
     }
 
     @Override
-    public boolean removeResources(String id) throws IOException {
-        File tempDir = new File("./Resources/R" + id);
+    public void removeResources(String id) throws IOException {
+        File temp_dir = new File("./Resources/R" + id);
 
-        if (tempDir.exists()){
-            String[]entries = tempDir.list();
+        if (temp_dir.exists()){
+            String[]entries = temp_dir.list();
             for(String s: entries){
-                File currentFile = new File(tempDir.getPath(),s);
-                currentFile.delete();
+                File current_file = new File(temp_dir.getPath(),s);
+                current_file.delete();
             }
-            if (tempDir.delete()){
+            if (temp_dir.delete()){
                 System.out.println("Machine resources "+id+" deleted");
             }
             else{
                 System.out.println("Deletion failed");
             }
-            return true;
         }
-        return false;
     }
 
     @Override
@@ -118,8 +87,13 @@ public class Switcher implements SwitcherInterface {
     }
 
     @Override
-    public byte[] read_machine(String file_name) throws IOException, NotBoundException {
-        return new byte[0];
+    public byte[] readWithSwitcher(String file_name) throws IOException, NotBoundException {
+        if (!this.inwriting.contains(file_name)){
+            return this.machineChoice().readWithSwitcher(file_name);
+        }
+        else{
+            return "File in writing".getBytes();
+        }
     }
 
     @Override
@@ -130,7 +104,7 @@ public class Switcher implements SwitcherInterface {
             machine_choice.addLoad();
             machine_choice.write(file_name, data);
             this.updateResources(file_name, data, machine_choice.getMachineId());
-            machine_choice.unLoad();
+            machine_choice.unload();
             this.inwriting.remove(file_name);
         }
         else{
@@ -139,36 +113,36 @@ public class Switcher implements SwitcherInterface {
     }
 
     @Override
-    public String getMachineId() throws RemoteException {
+    public String getMachineId() {
         return null;
     }
 
     @Override
-    public void CheckResources(String file_name) throws IOException {
+    public void checkResources(String file_name) {
     }
 
     @Override
-    public int getLoad() throws RemoteException {
+    public int getLoad() {
         return 0;
     }
 
     @Override
-    public void setLoad(Integer load) throws RemoteException {
+    public void setLoad(Integer load) {
 
     }
 
     @Override
-    public void addLoad() throws RemoteException {
+    public void addLoad() {
 
     }
 
     @Override
-    public void unLoad() throws RemoteException {
+    public void unload() {
 
     }
 
     @Override
-    public void load(Machine machine, int load) throws RemoteException {
+    public void load(Machine machine, int load) {
 
     }
 }
