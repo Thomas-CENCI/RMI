@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.rmi.NotBoundException;
+import java.util.concurrent.TimeUnit;
 
 public class MachineObj implements Machine{
     Integer id;
@@ -20,7 +21,9 @@ public class MachineObj implements Machine{
     }
 
     @Override
-    public byte[] read(String file_name, ClientInterface client) throws IOException, NotBoundException {
+    public byte[] read(String file_name, ClientInterface client) throws IOException, NotBoundException, InterruptedException {
+        TimeUnit.SECONDS.sleep(10);
+
         Path path = Paths.get("./Resources/R"+this.getMachineId()+"/"+file_name);
         byte[] data = Files.readAllBytes(path);
 
@@ -85,7 +88,9 @@ public class MachineObj implements Machine{
     }
 
     @Override
-    public void write(String file_name, byte[] data) {
+    public void write(String file_name, byte[] data) throws InterruptedException {
+        TimeUnit.SECONDS.sleep(10);
+
         try {
             FileWriter my_writer = new FileWriter("./Resources/R"+this.getMachineId()+"/"+file_name);
             System.out.println(new String(data, StandardCharsets.UTF_8)+"machine"+this.getMachineId());

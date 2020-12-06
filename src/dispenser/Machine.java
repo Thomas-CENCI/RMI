@@ -6,7 +6,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface Machine extends Remote {
-    byte[] read(String file_name, ClientInterface client) throws IOException, NotBoundException;
+    byte[] read(String file_name, ClientInterface client) throws IOException, NotBoundException, InterruptedException;
     byte[] readWithSwitcher(String file_name) throws IOException, NotBoundException;
     void write(String file_name, byte data[]) throws Exception;
     String getMachineId() throws RemoteException;

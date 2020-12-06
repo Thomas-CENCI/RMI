@@ -77,9 +77,14 @@ public class Switcher implements SwitcherInterface {
     }
 
     @Override
-    public byte[] read(String file_name, ClientInterface client) throws IOException, NotBoundException {
+    public byte[] read(String file_name, ClientInterface client) throws IOException, NotBoundException, InterruptedException {
         if (!this.inwriting.contains(file_name)){
-            return this.machineChoice().read(file_name, client);
+            Machine machine_choice = this.machineChoice();
+            System.out.println("CHOSEN MACHINE :" + machine_choice.getMachineId());
+            machine_choice.addLoad();
+            byte[] res = machine_choice.read(file_name, client);
+            machine_choice.unload();
+            return res;
         }
         else{
             return "File in writing".getBytes();
@@ -89,10 +94,14 @@ public class Switcher implements SwitcherInterface {
     @Override
     public byte[] readWithSwitcher(String file_name) throws IOException, NotBoundException {
         if (!this.inwriting.contains(file_name)){
-            return this.machineChoice().readWithSwitcher(file_name);
+            Machine machine_choice = this.machineChoice();
+            machine_choice.addLoad();
+            byte[] res = machine_choice.readWithSwitcher(file_name);
+            machine_choice.unload();
+            return res;
         }
         else{
-            return "File in writing".getBytes();
+            return "File in writing, please try again later".getBytes();
         }
     }
 

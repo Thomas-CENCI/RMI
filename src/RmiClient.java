@@ -11,11 +11,11 @@ public class RmiClient implements ClientInterface {
         System.out.println(new String(data, StandardCharsets.UTF_8));
     }
 
-    public void read(String file_name, SwitcherInterface switcher) throws IOException, NotBoundException {
+    public void read(String file_name, SwitcherInterface switcher) throws IOException, NotBoundException, InterruptedException {
         switcher.read(file_name, (ClientInterface) UnicastRemoteObject.exportObject((ClientInterface) this, 0));
     }
 
-    public void readWithSwitcher(String file_name, SwitcherInterface switcher) throws IOException, NotBoundException {
+    public void readWithSwitcher(String file_name, SwitcherInterface switcher) throws Exception {
         System.out.println(new String(switcher.readWithSwitcher(file_name), StandardCharsets.UTF_8));
     }
 
@@ -29,9 +29,11 @@ public class RmiClient implements ClientInterface {
     }
 
     public static void main(String args[]) throws Exception {
-        CreateMachine machine_manager = new CreateMachine();
+       /*CreateMachine machine_manager = new CreateMachine();
         machine_manager.createMachine();
         machine_manager.createMachine();
+        */
+
         new RmiClient();
 
         /*switcher.write("text.txt", "Un test".getBytes());
