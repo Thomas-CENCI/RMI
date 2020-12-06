@@ -93,7 +93,7 @@ public class MachineObj implements Machine{
 
         try {
             FileWriter my_writer = new FileWriter("./Resources/R"+this.getMachineId()+"/"+file_name);
-            System.out.println(new String(data, StandardCharsets.UTF_8)+"machine"+this.getMachineId());
+            // System.out.println(new String(data, StandardCharsets.UTF_8)+"machine"+this.getMachineId());
             my_writer.write(new String(data, StandardCharsets.UTF_8));
             my_writer.close();
             System.out.println("[MACHINE] "+this.getMachineId()+" Successfully wrote to the file "+file_name);
