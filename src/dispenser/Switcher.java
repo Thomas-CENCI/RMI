@@ -86,7 +86,7 @@ public class Switcher implements SwitcherInterface {
             return res;
         }
         else{
-            return "File in writing, please try again later".getBytes();
+            return ("File "+file_name+" in writing, please try again later").getBytes();
         }
     }
 
@@ -101,7 +101,7 @@ public class Switcher implements SwitcherInterface {
             return res;
         }
         else{
-            return "File in writing, please try again later".getBytes();
+            return ("File "+file_name+" in writing, please try again later").getBytes();
         }
     }
 
@@ -118,7 +118,7 @@ public class Switcher implements SwitcherInterface {
             this.inwriting.remove(file_name);
         }
         else{
-            System.out.println("File already in writing");
+            System.out.println("File "+file_name+" already in writing");
         }
     }
 
