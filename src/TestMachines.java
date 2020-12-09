@@ -4,5 +4,7 @@ public class TestMachines {
         CreateMachine machine_manager = new CreateMachine();
         machine_manager.createMachine();
         machine_manager.createMachine();
+        //machine_manager.createMachine();
+        //machine_manager.createMachine();
     }
 }

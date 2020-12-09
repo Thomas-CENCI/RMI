@@ -22,7 +22,7 @@ public class MachineObj implements Machine{
 
     @Override
     public byte[] read(String file_name, ClientInterface client) throws IOException, NotBoundException, InterruptedException {
-        TimeUnit.SECONDS.sleep(10);
+        TimeUnit.SECONDS.sleep(5);
 
         Path path = Paths.get("./Resources/R"+this.getMachineId()+"/"+file_name);
         byte[] data = Files.readAllBytes(path);
@@ -88,13 +88,30 @@ public class MachineObj implements Machine{
     }
 
     @Override
+    public void append(String file_name, byte[] data) throws InterruptedException {
+        try {
+            String current_data = new String(this.readWithSwitcher(file_name), StandardCharsets.UTF_8);
+
+            FileWriter my_writer = new FileWriter("./Resources/R"+this.getMachineId()+"/"+file_name);
+
+            String new_data = new String(data, StandardCharsets.UTF_8);
+            my_writer.write(current_data + " " + new_data);
+            my_writer.close();
+            System.out.println("[MACHINE] "+this.getMachineId()+" Successfully wrote to the file "+file_name);
+        } catch (IOException e) {
+            System.out.println("[MACHINE] "+this.getMachineId()+" An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void write(String file_name, byte[] data) throws InterruptedException {
-        TimeUnit.SECONDS.sleep(10);
+        TimeUnit.SECONDS.sleep(5);
 
         try {
             FileWriter my_writer = new FileWriter("./Resources/R"+this.getMachineId()+"/"+file_name);
-            // System.out.println(new String(data, StandardCharsets.UTF_8)+"machine"+this.getMachineId());
-            my_writer.write(new String(data, StandardCharsets.UTF_8));
+            String new_data = new String(data, StandardCharsets.UTF_8);
+            my_writer.write(new_data);
             my_writer.close();
             System.out.println("[MACHINE] "+this.getMachineId()+" Successfully wrote to the file "+file_name);
         } catch (IOException e) {

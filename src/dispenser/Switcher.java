@@ -25,7 +25,6 @@ public class Switcher implements SwitcherInterface {
                     min_value = machine.getLoad();
                     chosen_machine = machine;
                 }
-
             }
         }
         return chosen_machine;
@@ -113,6 +112,23 @@ public class Switcher implements SwitcherInterface {
             System.out.println("[SWITCHER][MACHINE] " + machine_choice.getMachineId() + " : write " + file_name);
             machine_choice.addLoad();
             machine_choice.write(file_name, data);
+            this.updateResources(file_name, data, machine_choice.getMachineId());
+            machine_choice.unload();
+            this.inwriting.remove(file_name);
+        }
+        else{
+            System.out.println("File "+file_name+" already in writing");
+        }
+    }
+
+    @Override
+    public void append(String file_name, byte[] data) throws Exception {
+        if (!this.inwriting.contains(file_name)){
+            this.inwriting.add(file_name);
+            Machine machine_choice = this.machineChoice();
+            System.out.println("[SWITCHER][MACHINE] " + machine_choice.getMachineId() + " : write " + file_name);
+            machine_choice.addLoad();
+            machine_choice.append(file_name, data);
             this.updateResources(file_name, data, machine_choice.getMachineId());
             machine_choice.unload();
             this.inwriting.remove(file_name);

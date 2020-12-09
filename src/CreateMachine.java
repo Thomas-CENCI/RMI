@@ -21,9 +21,9 @@ public class CreateMachine {
 
     public void createMachine() throws IOException {
         Machine machine = new MachineObj(this.id);
-        machine.setLoad(1);
+        machine.setLoad(0);
         this.addMachine(machine);
-        id++;
+        this.id++;
         /*for (int i=1; i<=4; i++){
             Machine machine = new MachineObj(i);
             machine.setLoad(1);

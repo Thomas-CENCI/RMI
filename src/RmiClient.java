@@ -25,6 +25,10 @@ public class RmiClient implements ClientInterface {
         this.switcher.write(file_name, data.getBytes());
     }
 
+    public void append(String file_name, String data) throws Exception {
+        this.switcher.append(file_name, data.getBytes());
+    }
+
     public RmiClient() throws Exception {
         this.switcher = (SwitcherInterface) Naming.lookup("//localhost/switcher");
     }
